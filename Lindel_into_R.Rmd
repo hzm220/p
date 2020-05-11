@@ -1,0 +1,82 @@
+---
+title: "Lindel_into_R"
+author: "Hui Mao"
+date: "5/8/2020"
+output: html_document
+---
+
+# Getting started
+* Install and import "reticulate": install.packages("reticulate")
+* Python version: By default, reticulate uses the version of Python found on your PATH (i.e. Sys.which("python")).
+The use_python() function enables you to specify an alternate version, for example: use_python("/usr/bin/python" )
+* use_condaenv() functions enable you to specify versions of Python in virtual or Conda environments.
+* Requirements for Lindel with Python: conda install shell
+  + Compatible with both Python2.7 and Python3.5 or higher.
+  + Requires biopython (Bio),numpy and scipy.
+* import: biopython <- import("biopython") or py_run_string('import Bio').
+
+```{r setup}
+# install.packages("reticulate")
+library(reticulate)
+#Set default Python binary.
+Sys.setenv(RETICULATE_PYTHON = "/Users/Hui/opt/anaconda3/envs/r-cl/bin/python")
+#Suggest a Python binary to use by path.
+use_python("/Users/Hui/opt/anaconda3/envs/r-cl/bin/python")
+#Suggest a Conda env to use.
+use_condaenv("r-cl", conda = "/Users/hui/opt/anaconda3/condabin/conda")
+#Check which version of python and packages has been loaded. 
+py_config()
+Sys.which("python")
+py_available()
+py_module_available("numpy")
+py_module_available("scipy")
+py_module_available("Bio")
+#import
+py_run_string('import scipy')
+py_run_string('import numpy')
+py_run_string('import Bio')
+
+```
+
+
+# R_Lindel_prediction
+* Define rlindel function based on Lindel_prediction.py, with only one argument: inputseq, return the indels.
+* Modificate Lindel_prediction.py with the following:
+  + add write_file
+  + define rlp (r_lindel_prediction) function.
+  + Replace sys.argv[1] with fucntion parameter inputseq.
+  + Drop filename = sys.argv[2]
+  + Replace print with return.
+
+```{r python}
+
+
+setwd("/Users/Hui/CRISPRLindel/Lindel")
+
+rlindel<- function(inputseq) {
+  source_python("RLindelprediction.py")
+  res <- rlp(inputseq)
+  e <- 'Error: No PAM sequence is identified.Please check your sequence and try again'
+  
+  if (res == e) {
+   return (e)
+  } else {
+  res1<- data.frame(res)
+  result <- t(res1)
+  row.names(result) <- NULL
+  colnames(result) <- c("Indels", "Frequency", "Location")
+  return(result)
+  }
+}
+
+#input sequence here
+inputseq <- "TAACGTTATCAACGCCTATATTAAAGCGACCGTCGGTTGAACTGCGTGGATCAATGCGTC"
+
+head (rlindel(inputseq))
+
+```
+
+
+## Enjoy!
+
+
