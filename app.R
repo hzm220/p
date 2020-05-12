@@ -10,7 +10,8 @@ ui <- fluidPage(
 	
 	sidebarLayout(
 		sidebarPanel(
-			textInput("sequence", label = "Please enter your sequence here:"),
+			textInput("sequence", label = "Please enter your sequence here:",
+			          value = "TAACGTTATCAACGCCTATATTAAAGCGACCGTCGGTTGAACTGCGTGGAT"),
 			downloadButton("downloadTable", "Download Lindel result"),
 		),
 		mainPanel(
